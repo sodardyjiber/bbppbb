@@ -1,0 +1,31 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    # 每天 UTC 时间 0 点（北京时间 8 点）同步
+    - cron: "0 1 * * *"
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 赋予写入权限
+
+    steps:
+      - name: Checkout Fork
+        uses: actions/checkout@v4
+
+      - name: Add Upstream Remote
+        run: |
+          git remote add upstream https://github.com/bia-pain-bache/BPB-Worker-Panel.git
+          git fetch upstream
+
+      - name: Merge Upstream Changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git merge upstream/main --allow-unrelated-histories # 根据原项目分支名调整
+
+      - name: Push Changes
+        run: git push origin main
