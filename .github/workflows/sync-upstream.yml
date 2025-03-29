@@ -19,6 +19,9 @@ jobs:
           git config user.name "sodardyjiber"
           git config user.email "sodardyjiber@outlook.com"
 
+      - name: Remove existing upstream if any
+        run: git remote remove upstream || true
+
       - name: Add upstream repository
         run: git remote add upstream https://github.com/bia-pain-bache/BPB-Worker-Panel.git
 
