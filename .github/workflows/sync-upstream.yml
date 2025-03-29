@@ -1,31 +1,34 @@
-name: Sync Upstream
+name: Sync Fork
 
 on:
   schedule:
-    # 每天 UTC 时间 0 点（北京时间 8 点）同步
-    - cron: "0 1 * * *"
-  workflow_dispatch: # 允许手动触发
+    - cron: '0 1 * * *'  # 每天 UTC 时间 0 点运行一次，可根据需要调整频率
+  workflow_dispatch:    # 允许手动触发
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # 赋予写入权限
-
     steps:
-      - name: Checkout Fork
-        uses: actions/checkout@v4
+      - name: Checkout fork repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add Upstream Remote
+      - name: Set up Git configuration
         run: |
-          git remote add upstream https://github.com/bia-pain-bache/BPB-Worker-Panel.git
-          git fetch upstream
+          git config user.name "sodardyjiber"
+          git config user.email "sodardyjiber@outlook.com"
 
-      - name: Merge Upstream Changes
+      - name: Add upstream repository
+        run: git remote add upstream https://github.com/bia-pain-bache/BPB-Worker-Panel.git
+
+      - name: Fetch upstream changes
+        run: git fetch upstream
+
+      - name: Merge upstream changes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git merge upstream/main --allow-unrelated-histories # 根据原项目分支名调整
+          git checkout main
+          git merge upstream/main --no-edit
 
-      - name: Push Changes
+      - name: Push changes to fork
         run: git push origin main
