@@ -1,0 +1,22 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 每天 UTC 时间凌晨3点同步（可改）
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync upstream repo
+        uses: TG908/fork-sync@v1.8
+        with:
+          github_token: ${{ secrets.PAT }}
+          upstream_repository: bia-pain-bache/BPB-Worker-Panel
+          upstream_branch: main
+          target_branch: main
+          force: false
